@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PingSquad</title>
+  <link rel="stylesheet" href="Basic Style.css">
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <h1>PingSqooooooooouad</h1>
+  <div id="chatBox"></div>
+  <input type="text" id="message" placeholder="Type your message...">
+  <button id="sendButton">Send</button>
+
+  <script>
+    
+    const socket = io();
+    const chatBox = document.getElementById('chatBox');
+    const messageInput = document.getElementById('message');
+    const sendButton = document.getElementById('sendButton');
+
+    socket.on('chatMessage', (msg) => {
+      const msgElement = document.createElement('p');
+      msgElement.textContent = msg;
+      chatBox.appendChild(msgElement);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+
+    sendButton.addEventListener('click', () => {
+      console.log("clicked")
+      const msg = messageInput.value;
+      if (msg) {
+        console.log("Sent")
+        socket.emit('chatMessage', msg);
+        const msgElement = document.createElement('p');
+        msgElement.textContent = 'You: ' + msg;
+        chatBox.appendChild(msgElement);
+        messageInput.value = ''; 
+        chatBox.scrollTop = chatBox.scrollHeight; 
+      }
+    });
+
+    messageInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendButton.click();
+      }
+    });
+  </script>
+</body>
+</html>

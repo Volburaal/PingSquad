@@ -1,0 +1,17 @@
+{
+  "name": "pingsquad",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "dev": "npm run start & browser-sync start --proxy \"localhost:3000\" --files \"public/**/*.*\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.1",
+    "socket.io": "^4.8.1"
+  }
+}
