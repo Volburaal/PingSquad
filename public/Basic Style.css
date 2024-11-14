@@ -1,8 +1,54 @@
+body{
 
-body {
-    font-family: Arial, sans-serif; padding: 20px;
 }
-#chat-box { width: 100%; height: 300px; border: 1px solid #ccc; overflow-y: auto; margin-bottom: 10px; }
-#chat-box p { margin: 5px 0; }
-#message { width: 80%; padding: 10px; }
-#send-btn { padding: 10px; }
+.title{
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    font-size: 30px;
+}
+.container{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 80%;
+    margin-top: 60px
+}
+
+.chatbox{
+    border:solid;
+    width: 100%;
+    height: 70vh;
+}
+
+.inputTools{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    height: 50px;
+}
+.inputArea{
+    font-size: 20px;
+    background-color: transparent;
+    border: solid;
+    width:85%;
+    height: 100%;
+}
+.sendButton{
+    backdrop-filter: blur(10px);
+    background-color: transparent;
+    border: solid;
+    width:10%;
+    height: 100%;
+    transition: .15s ease-in-out;
+}
+.sendButton:hover{
+    background-color: rgb(175, 175, 175);
+}
+.sendButton:active{
+
+    background-color: rgb(107, 107, 107);
+}
