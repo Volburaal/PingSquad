@@ -3,19 +3,19 @@
 <html>
     <head>
         <title>PingSquad</title>
-        <link rel="stylesheet" href="Basic Style.css">
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
         <div class = "title">Ping Squad</div>
         <div class="container">
-            <div id="chatbox" class="chatbox"> </div>
+                <div id="chatbox" class="chatbox"> </div>
             <div class="inputTools">
-                <input id = "msgInput" class="inputArea">
+                <textarea id = "msgInput" class="inputArea" autocomplete="off"></textarea>
                 <button id = "sendBtn" class = "sendButton" onclick="send()">Send</button>
             </div>
         </div>
   <script src="https://cdn.socket.io/4.8.0/socket.io.min.js" integrity="sha384-OoIbkvzsFFQAG88r+IqMAjyOtYDPGO0cqK5HF5Uosdy/zUEGySeAzytENMDynREd" crossorigin="anonymous"></script>
-  <script src = "../worker.js"></script>
+  <script src = "worker.js"></script>
     </body>
 </html>
 

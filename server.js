@@ -12,15 +12,17 @@ app.use(express.static('public'));
 
 io.on('connection', (socket) => {
   console.log('A peer connected:', socket.id);
+  socket.broadcast.emit('peerJoined', socket.id);
 
   socket.on('chatMessage', (msg) => {
     console.log(socket.id ," says: " , msg);
-    socket.broadcast.emit('chatMessage', msg);
+    socket.broadcast.emit('chatMessage', socket.id+msg);
   });
 
 
   socket.on('disconnect', () => {
     console.log('A peer disconnected:', socket.id);
+    socket.broadcast.emit('peerLeft', socket.id);
   });
 });
 
