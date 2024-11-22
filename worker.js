@@ -10,7 +10,7 @@ socket.on('peerJoined', (peerId) => {
   peerDiv.textContent = `+ ${peerId} has joined the chat.`;
   chatBox.appendChild(peerDiv);
   lastpeer=''
-
+  chatBox.scrollTop = chatBox.scrollHeight;
 });
 
 socket.on('peerLeft', (peerId) => {
@@ -19,7 +19,7 @@ socket.on('peerLeft', (peerId) => {
   peerDiv.textContent = `- ${peerId} has left the chat.`;
   chatBox.appendChild(peerDiv);
   lastpeer=''
-
+  chatBox.scrollTop = chatBox.scrollHeight;
 });
 socket.on('chatMessage', (msg) => {
   peername=msg.slice(0,20);
