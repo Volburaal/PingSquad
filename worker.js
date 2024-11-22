@@ -1,4 +1,4 @@
-const socket = io("127.0.0.1:3000");
+const socket = io("http://192.168.137.1:3000");
 const chatBox = document.getElementById('chatbox');
 const message = document.getElementById('msgInput');
 const sendButton = document.getElementById('sendBtn');
