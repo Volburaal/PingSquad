@@ -1,4 +1,5 @@
-const socket = io("https://pingsquad.onrender.com");
+const server = "127.0.0.1:3000"
+const socket = io(server);
 const chatBox = document.getElementById('chatbox');
 const message = document.getElementById('msgInput');
 const sendButton = document.getElementById('sendBtn');
@@ -10,7 +11,7 @@ socket.on('peerJoined', (peerId) => {
   peerDiv.textContent = `+ ${peerId} has joined the chat.`;
   chatBox.appendChild(peerDiv);
   lastpeer=''
-  chatBox.scrollTop = chatBox.scrollHeight;
+
 });
 
 socket.on('peerLeft', (peerId) => {
@@ -19,7 +20,7 @@ socket.on('peerLeft', (peerId) => {
   peerDiv.textContent = `- ${peerId} has left the chat.`;
   chatBox.appendChild(peerDiv);
   lastpeer=''
-  chatBox.scrollTop = chatBox.scrollHeight;
+  
 });
 socket.on('chatMessage', (msg) => {
   peername=msg.slice(0,20);
@@ -67,3 +68,4 @@ message.addEventListener('keydown', (e) => {
     message.value += '\n';
   }
 });
+

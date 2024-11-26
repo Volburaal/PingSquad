@@ -6,51 +6,14 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <div class = "title">Ping Squad</div>
-        <div class="glowing">
-            
-            <span style="--i:1;"></span>
-            
-            <span style="--i:2;"></span>
-            
-            <span style="--i:3;"></span>
-            
-        </div>
-        
-        <div class="glowing">
-            
-            <span style="--i:1;"></span>
-            
-            <span style="--i:2;"></span>
-            
-            <span style="--i:3;"></span>
-            
-        </div>
-        
-        <div class="glowing">
-            
-            <span style="--i:1;"></span>
-            
-            <span style="--i:2;"></span>
-            
-            <span style="--i:3;"></span>
-            
-        </div>
-        
-        <div class="glowing">
-            
-            <span style="--i:1;"></span>
-            
-            <span style="--i:2;"></span>
-            
-            <span style="--i:3;"></span>
-            
-        </div>
+        <div class = "title"><b>Pinguin</b></div>
         <div class="container">
                 <div id="chatbox" class="chatbox"> </div>
             <div class="inputTools">
+                <input type="file" id="fileInput" class="actualFileArea" hidden>
+                <label for="fileInput" class="fileArea"><img src="assets/upload2.svg" alt="Upload File"></label>
                 <textarea id = "msgInput" class="inputArea" autocomplete="off"></textarea>
-                <button id = "sendBtn" class = "sendButton" onclick="send()">Send</button>
+                <button id = "sendBtn" class = "sendButton" onclick="send()"><img src="assets/send.svg" alt="Send"></button>
             </div>
         </div>
   <script src="https://cdn.socket.io/4.8.0/socket.io.min.js" integrity="sha384-OoIbkvzsFFQAG88r+IqMAjyOtYDPGO0cqK5HF5Uosdy/zUEGySeAzytENMDynREd" crossorigin="anonymous"></script>

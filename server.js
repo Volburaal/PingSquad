@@ -10,6 +10,11 @@ const io = socketIo(server, {cors:{origin:"*"}});
 app.use(cors());
 app.use(express.static('public'));
 
+app.get('/', (req, res) => {
+  const version = "1.0.0"; // replace with your version
+  res.send(`Server is running v${version}`);
+});
+
 io.on('connection', (socket) => {
   console.log('A peer connected:', socket.id);
   socket.broadcast.emit('peerJoined', socket.id);
