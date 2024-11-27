@@ -1,4 +1,4 @@
-const server = "127.0.0.1:3000"
+const server = "https://pingsquad.onrender.com"
 const socket = io(server);
 const chatBox = document.getElementById('chatbox');
 const message = document.getElementById('msgInput');
