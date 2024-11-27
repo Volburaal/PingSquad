@@ -9,11 +9,10 @@ const server = http.createServer(app);
 const io = socketIo(server, { cors: { origin: "*" } });
 
 app.use(cors());
-app.use(express.static(__dirname));
+app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-  const version = "1.0.2";
-  // res.sendFile(path.join(__dirname, 'index.html')); //sends the static web page, not of much use
+  const version = "1.0.3";
   res.send(`Server is running v${version}`);
 });
 
