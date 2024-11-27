@@ -184,10 +184,18 @@ color: #dd3064;
     object-fit: contain;
 }
 
-.chat-image {
+.chat-image-other {
     max-width: 200px;
     max-height: 200px;
     margin: 10px 0;
     border-radius: 5px;
-    display: block;
+    align-self: flex-start;
+}
+
+.chat-image-you {
+    max-width: 200px;
+    max-height: 200px;
+    margin: 10px 0;
+    border-radius: 5px;
+    align-self: flex-end;
 }
