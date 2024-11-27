@@ -6,18 +6,34 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <div class = "title"><b>Pinguin</b></div>
-        <div class="container">
-                <div id="chatbox" class="chatbox"> </div>
-            <div class="inputTools">
-                <input type="file" id="fileInput" class="actualFileArea" accept="image/*" hidden>
-                <label for="fileInput" class="fileArea"><img src="assets/upload2.svg" alt="Upload File"></label>
-                <textarea id = "msgInput" class="inputArea" autocomplete="off"></textarea>
-                <button id = "sendBtn" class = "sendButton" onclick="send()"><img src="assets/send.svg" alt="Send"></button>
+        <div id="login-overlay" class="login-overlay">
+            <div id="login-container" class="login-container">
+                <div id="login-title" class="login-title">Pick a name</div>
+                Username
+                <input id="nameInput" type="text" class="login-input">
+                <div class="login-buttons">
+                    <button id="login" onclick="setname()">Start</button>
+                </div>
             </div>
         </div>
-  <script src="https://cdn.socket.io/4.8.0/socket.io.min.js" integrity="sha384-OoIbkvzsFFQAG88r+IqMAjyOtYDPGO0cqK5HF5Uosdy/zUEGySeAzytENMDynREd" crossorigin="anonymous"></script>
-  <script src = "worker.js"></script>
+
+        <div>
+            <div id="page" class="page">
+            <div class="title"><b>Pinguin</b></div>
+            <div class="container">
+                    <div id="chatbox" class="chatbox"> </div>
+                <div class="inputTools">
+                    <input type="file" id="fileInput" class="actualFileArea" accept="image/*" hidden>
+                    <label for="fileInput" class="fileArea"><img src="assets/upload2.svg" alt="Upload File"></label>
+                    <textarea id = "msgInput" class="inputArea" autocomplete="off"></textarea>
+                    <button id = "sendBtn" class = "sendButton" onclick="send()"><img src="assets/send.svg" alt="Send"></button>
+                </div>
+            </div>
+            <div>
+        </div>
+        <script src="https://cdn.socket.io/4.8.0/socket.io.min.js" integrity="sha384-OoIbkvzsFFQAG88r+IqMAjyOtYDPGO0cqK5HF5Uosdy/zUEGySeAzytENMDynREd" crossorigin="anonymous"></script>
+        <script src = "worker.js"></script>
+        <script src = "authLog.js"></script>
     </body>
 </html>
 

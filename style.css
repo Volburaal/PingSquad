@@ -2,6 +2,102 @@ body{
     background: rgb(0,0,0);
     background: radial-gradient(circle, rgba(0,0,0,1) 80%, rgba(9,9,121,1) 92%, rgba(140,56,255,1) 100%);
 }
+.login-overlay{
+    position: absolute;
+    display: flex;
+    backdrop-filter: blur(10px);
+    background-color: transparent;
+    width: 99%;
+    height: 98vh;
+    z-index: 2;
+    display: none;
+    overflow-y:hidden;
+}
+
+.login-overlay::-webkit-scrollbar {
+    width: 12px;
+}
+
+.login-overlay::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.login-overlay::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 8, 8, 0.4);
+    border-radius: 10px;
+    border: 3px solid transparent;
+}
+.login-overlay::-webkit-scrollbar-thumb:hover{
+    background-color: rgba(255, 0, 0, 0.7);
+}
+
+.login-overlay::-webkit-scrollbar-button {
+    display: none;
+}
+
+.login-container{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    height: 50vh;
+    border: 2px #FFFFFF solid;
+    font-size: 30px;
+    background-color: transparent;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    color: #FFFFFF;
+    border: 2px #FFFFFF solid;
+    border-radius: 20px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    border: 2px #FFFFFF solid;
+    border-radius: 20px;
+    align-items: center;
+}
+.login-title{
+    font-size: 48px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    color: #FFFFFF;
+    translate: 0% -150%;
+}
+.login-input{
+    height: 5vh;
+    width: 60%;
+    margin: 10px;
+    font-size: 20px;
+    background-color: transparent;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    color: #FFFFFF;
+    border: 2px #FFFFFF solid;
+    border-radius: 20px;
+}
+
+.login-buttons{
+    margin:auto;
+    width: 60%;
+    display: flex;
+    justify-content:space-around;
+}
+
+.login-buttons button{
+    padding: 10px;
+    font-size: 20px;
+    background-color: transparent;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    color: #FFFFFF;
+    border: 2px #FFFFFF solid;
+    border-radius: 20px;
+    cursor: pointer ;
+}
+
+
+.page{
+    z-index: 1;
+    display: block;
+}
 .title{
     display: flex;
     justify-content: center;
@@ -22,7 +118,6 @@ body{
     right: 0;
     margin: auto;
     width: 80%;
-    
     margin-top: 70px
 }
 
