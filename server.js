@@ -21,14 +21,20 @@ io.on('connection', (socket) => {
 
   socket.on('chatMessage', (msg) => {
     console.log(socket.id ," says: " , msg);
-    socket.broadcast.emit('chatMessage', socket.id+msg);
+    const sk = socket.id;
+    socket.broadcast.emit('chatMessage', { sk , msg});
   });
 
+  socket.on('image-data', (src) => {
+    console.log(src)
+    socket.broadcast.emit('sentImg', src)
+  })
 
   socket.on('disconnect', () => {
     console.log('A peer disconnected:', socket.id);
     socket.broadcast.emit('peerLeft', socket.id);
   });
+
 });
 
 
