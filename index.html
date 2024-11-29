@@ -10,7 +10,7 @@
             <div id="login-container" class="login-container">
                 <div id="login-title" class="login-title">Pick a name</div>
                 Username
-                <input id="nameInput" type="text" class="login-input">
+                <input id="nameInput" type="text" class="login-input" autocomplete="off">
                 <div class="login-buttons">
                     <button id="login" onclick="setname()">Start</button>
                 </div>
@@ -33,7 +33,6 @@
         </div>
         <script src="https://cdn.socket.io/4.8.0/socket.io.min.js" integrity="sha384-OoIbkvzsFFQAG88r+IqMAjyOtYDPGO0cqK5HF5Uosdy/zUEGySeAzytENMDynREd" crossorigin="anonymous"></script>
         <script src = "worker.js"></script>
-        <script src = "authLog.js"></script>
     </body>
 </html>
 

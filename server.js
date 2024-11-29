@@ -26,17 +26,20 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('chatMessage', { sk, msg });
   });
 
-  // Handling image data
   socket.on('image-data', (src) => {
     console.log(`Received image data from ${socket.id}`);
     const sk = socket.id;
-    // Emit the image content along with the sender's socket ID to other peers
     socket.broadcast.emit('sentImg', { sk, src });
   });
 
   socket.on('disconnect', () => {
     console.log('A peer disconnected:', socket.id);
     socket.broadcast.emit('peerLeft', socket.id);
+  });
+
+  socket.on('peername', (peer) =>{
+    console.log();
+    socket.broadcast.emit('nameplate', peer);
   });
 });
 
