@@ -298,3 +298,82 @@ body{
     border-radius: 5px;
     align-self: flex-end;
 }
+
+.file-you, .file-other {
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    width: fit-content;
+    max-width: 70%;
+  }
+  
+  .file-you {
+    margin-left: auto;
+    border-color: #4caf50;
+  }
+  
+  .file-other {
+    border-color: #2196f3;
+  }
+  
+  .file-you button, .file-other button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    font-size: 12px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .file-you button {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .file-other button {
+    background-color: #2196f3;
+    color: white;
+  }
+  
+  .file-you button:hover, .file-other button:hover {
+    background-color: #0069c0;
+  }
+  
+  /* Modal overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  /* Modal content */
+  .modal-content {
+    position: relative;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+  }
+  
+  /* Close button */
+  .preview-image-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    font-size: 16px;
+  }

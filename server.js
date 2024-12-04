@@ -1,5 +1,5 @@
 const express = require('express');
-var cors = require('cors');
+const cors = require('cors');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
@@ -20,25 +20,29 @@ io.on('connection', (socket) => {
   console.log('A peer connected:', socket.id);
   socket.broadcast.emit('peerJoined', socket.id);
 
+  // Handle chat messages
   socket.on('chatMessage', (msg) => {
     console.log(socket.id, " says: ", msg);
     const sk = socket.id;
     socket.broadcast.emit('chatMessage', { sk, msg });
   });
 
-  socket.on('image-data', (src) => {
-    console.log(`Received image data from ${socket.id}`);
+  // Handle file data
+  socket.on('file-data', (payload) => {
+    console.log(`Received file from ${socket.id}: ${payload.name}`);
     const sk = socket.id;
-    socket.broadcast.emit('sentImg', { sk, src });
+    socket.broadcast.emit('file-received', { sk, ...payload });
   });
 
+  // Handle peer leaving
   socket.on('disconnect', () => {
     console.log('A peer disconnected:', socket.id);
     socket.broadcast.emit('peerLeft', socket.id);
   });
 
-  socket.on('peername', (peer) =>{
-    console.log();
+  // Handle peer name
+  socket.on('peername', (peer) => {
+    console.log(`Peername from ${socket.id}: ${peer}`);
     socket.broadcast.emit('nameplate', peer);
   });
 });

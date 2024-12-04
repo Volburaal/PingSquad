@@ -1,5 +1,5 @@
 const server = "https://pingsquad.onrender.com/";
-// const server = "http://127.0.0.1:3000/";
+//const server = "http://127.0.0.1:3000/";
 const socket = io(server);
 const chatBox = document.getElementById('chatbox');
 const message = document.getElementById('msgInput');
@@ -7,6 +7,7 @@ const sendButton = document.getElementById('sendBtn');
 var lastpeer = '';
 var Peername = '';
 
+// Handle peer joined
 socket.on('peerJoined', (peerId) => {
   const peerDiv = document.createElement('div');
   peerDiv.classList.add('peer_joined');
@@ -15,19 +16,21 @@ socket.on('peerJoined', (peerId) => {
   lastpeer = '';
 });
 
+// Handle nameplate
 socket.on('nameplate', (peer) => {
   const peername = peer.slice(0,20);
   const actualname = peer.slice(20);
-  console.log("recieved from: ",actualname);
+  console.log("Received from: ", actualname);
   if (peername != lastpeer) {
     lastpeer = peername;
-    const peer = document.createElement('div');
-    peer.innerHTML = actualname;
-    peer.classList.add('nameplate');
-    chatBox.appendChild(peer);
+    const peerDiv = document.createElement('div');
+    peerDiv.innerHTML = actualname;
+    peerDiv.classList.add('nameplate');
+    chatBox.appendChild(peerDiv);
   }
 });
 
+// Handle peer left
 socket.on('peerLeft', (peerId) => {
   const peerDiv = document.createElement('div');
   peerDiv.classList.add('peer_left');
@@ -36,6 +39,7 @@ socket.on('peerLeft', (peerId) => {
   lastpeer = '';
 });
 
+// Handle incoming chat messages
 socket.on('chatMessage', ({ sk: peername, msg }) => {
   const msgElement = document.createElement('div');
   msgElement.innerHTML = msg.replace(/\n/g, '<br>');
@@ -44,24 +48,19 @@ socket.on('chatMessage', ({ sk: peername, msg }) => {
   chatBox.scrollTop = chatBox.scrollHeight;
 });
 
-socket.on('sentImg', ({ sk:peername, src }) => {
-  const uint8Array = new Uint8Array(src.content);
-  const blob = new Blob([uint8Array], { type: 'image/png' });
-  const url = (window.URL || window.webkitURL).createObjectURL(blob);
-  const img = document.createElement('img');
-  img.src = url;
-  img.width = 200;
-  img.height = 200;
-  img.classList.add('chat-image-other');
-  chatBox.appendChild(img);
-  chatBox.scrollTop = chatBox.scrollHeight;
+// Handle incoming files
+socket.on('file-received', ({ sk: peername, name, type, size, content }) => {
+  console.log(`Received file from ${peername}: ${name}`);
+  const filePayload = { name, type, size, content };
+  appendFilePreview(filePayload, false);
 });
 
+// Function to send chat messages
 function send() {
   console.log("Message sent");
   const msg = message.value;
   if (msg) {
-    socket.emit('peername', socket.id+Peername);
+    socket.emit('peername', socket.id + Peername);
     socket.emit('chatMessage', msg);
     const msgElement = document.createElement('div');
     msgElement.innerHTML = msg.replace(/\n/g, '<br>');
@@ -74,38 +73,115 @@ function send() {
   }
 }
 
+// Function to append file previews
+function appendFilePreview(filePayload, isSender) {
+  const { name, type, content } = filePayload;
+
+  // Reconstruct Uint8Array from content
+  const uint8Array = new Uint8Array(content);
+  const blob = new Blob([uint8Array], { type });
+  const url = (window.URL || window.webkitURL).createObjectURL(blob);
+
+  // Create file container
+  const fileDiv = document.createElement('div');
+  fileDiv.classList.add(isSender ? 'file-you' : 'file-other');
+
+  // File name
+  const fileNameElement = document.createElement('div');
+  fileNameElement.textContent = name;
+  fileDiv.appendChild(fileNameElement);
+
+  // Buttons container
+  const buttonsDiv = document.createElement('div');
+  buttonsDiv.classList.add('file-buttons');
+
+  // Preview button (only for images and text)
+  if (type.startsWith('image/') || type.startsWith('text/')) {
+    const previewButton = document.createElement('button');
+    previewButton.textContent = 'Preview';
+    previewButton.addEventListener('click', () => {
+      if (type.startsWith('image/')) {
+        previewButton.addEventListener('click', () => {
+          showImageInModal(url);
+        });
+      } else if (type.startsWith('text/')) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          alert(reader.result); // Display text content in an alert or modal
+        };
+        reader.readAsText(blob);
+      }
+    });
+    buttonsDiv.appendChild(previewButton);
+  }
+
+  // Download button
+  const downloadButton = document.createElement('button');
+  downloadButton.textContent = 'Download';
+  downloadButton.addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.click();
+  });
+  buttonsDiv.appendChild(downloadButton);
+
+  fileDiv.appendChild(buttonsDiv);
+
+  // Append to chatbox
+  chatBox.appendChild(fileDiv);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Handle incoming image via 'sentImg' (optional)
+socket.on('sentImg', ({ sk: peername, src }) => {
+  const uint8Array = new Uint8Array(src.content);
+  const blob = new Blob([uint8Array], { type: src.type || 'image/png' });
+  const url = (window.URL || window.webkitURL).createObjectURL(blob);
+  const img = document.createElement('img');
+  img.src = url;
+  img.width = 200;
+  img.height = 200;
+  img.classList.add('chat-image-other');
+  chatBox.appendChild(img);
+  chatBox.scrollTop = chatBox.scrollHeight;
+});
+
+// File input change listener
 document.querySelector("#fileInput").addEventListener("change", function (e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
   const fr = new FileReader();
   fr.onload = () => {
     const arrayBuffer = fr.result;
     const uint8Array = new Uint8Array(arrayBuffer);
     const payload = {
+      name: file.name,
+      type: file.type,
+      size: file.size,
       content: Array.from(uint8Array),
     };
-    socket.emit('peername', socket.id+Peername);
-    socket.emit('image-data', payload);
-    console.log("Sent image:", payload);
-    const blob = new Blob([uint8Array], { type: 'image/png' });
-    const url = (window.URL || window.webkitURL).createObjectURL(blob);
-    const img = document.createElement('img');
-    img.src = url;
-    img.width = 200;
-    img.height = 200;
-    img.classList.add('chat-image-you');
-    chatBox.appendChild(img);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    socket.emit('peername', socket.id + Peername);
+    socket.emit('file-data', payload);
+    console.log("Sent file:", payload);
+
+    // Append the file locally with appropriate buttons
+    appendFilePreview(payload, true);
   };
-  fr.readAsArrayBuffer(e.target.files[0]);
+  fr.readAsArrayBuffer(file);
 });
 
+// Function to set peer name
 function setname() {
   const nameIn = document.getElementById("nameInput");
   Peername = nameIn.value;
   console.log(Peername);
   const overlay = document.getElementById("login-overlay")
-  overlay.style.display="none";
+  overlay.style.display = "none";
 }
 
+// Handle "Enter" key press for message input
 message.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -116,3 +192,29 @@ message.addEventListener('keydown', (e) => {
     message.value += '\n';
   }
 });
+
+function showImageInModal(url) {
+  // Create modal elements
+  const modalOverlay = document.createElement('div');
+  modalOverlay.classList.add('modal-overlay');
+
+  const modalContent = document.createElement('div');
+  modalContent.classList.add('modal-content');
+
+  const img = document.createElement('img');
+  img.src = url;
+  img.classList.add('preview-image');
+
+  const closeButton = document.createElement('button');
+  closeButton.textContent = '×';
+  closeButton.classList.add('preview-image-close');
+  closeButton.addEventListener('click', () => {
+    document.body.removeChild(modalOverlay);
+  });
+
+  modalContent.appendChild(closeButton);
+  modalContent.appendChild(img);
+  modalOverlay.appendChild(modalContent);
+  document.body.appendChild(modalOverlay);
+}
+
