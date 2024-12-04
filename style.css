@@ -310,12 +310,33 @@ body{
   }
   
   .file-you {
-    margin-left: auto;
-    border-color: #4caf50;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 15px;
+    color: #d8d8d8;
+    font-weight: bold;
+    background-color: #8f23af;
+    padding: 10px;
+    border: none;
+    border-radius: 20px 20px 20px 20px;
+    margin-bottom: 2px;
+    max-width: 40%;
+    word-wrap: break-word;
+    align-self: flex-end;
   }
   
   .file-other {
-    border-color: #2196f3;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 15px;
+    color: #d8d8d8;
+    font-weight: bold;
+    background-color: #303030;
+    padding: 10px;
+    border: none;
+    border-radius: 20px 20px 20px 20px;
+    margin-bottom: 2px;
+    max-width: 40%;
+    word-wrap: break-word;
+    align-self: flex-start;
   }
   
   .file-you button, .file-other button {
@@ -328,20 +349,41 @@ body{
   }
   
   .file-you button {
-    background-color: #4caf50;
-    color: white;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 5px;
+    color: #d8d8d8;
+    font-weight: bold;
+    background-color: #b530dd;
+    padding: 10px;
+    border-radius: 20px 20px 20px 20px;
+    margin-bottom: 2px;
+    max-width: 100%;
+    word-wrap: break-word;
+    align-self: flex-end;
   }
   
   .file-other button {
-    background-color: #2196f3;
-    color: white;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 5px;
+    color: #d8d8d8;
+    font-weight: bold;
+    background-color: #3d3d3d;
+    padding: 10px;
+    border-radius: 20px 20px 20px 20px;
+    margin-bottom: 2px;
+    max-width: 100%;
+    word-wrap: break-word;
+    align-self: flex-start;
   }
   
-  .file-you button:hover, .file-other button:hover {
-    background-color: #0069c0;
+  .file-you button:hover {
+    background-color: #71158d;
+  }
+
+  .file-other button:hover{
+    background-color: #403341;
   }
   
-  /* Modal overlay */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -355,15 +397,16 @@ body{
     z-index: 1000;
   }
   
-  /* Modal content */
   .modal-content {
+    width: 50%;
+    height: auto;
     position: relative;
-    background-color: #fff;
+    background-color: #7e1818;
+    border:2px solid;
     padding: 20px;
-    border-radius: 5px;
+    border-radius: 50px;
   }
   
-  /* Close button */
   .preview-image-close {
     position: absolute;
     top: 10px;
