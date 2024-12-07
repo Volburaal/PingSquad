@@ -21,31 +21,30 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   const peerName = socket.handshake.query.name;
   console.log(`${peerName} (${socket.id}) has connected.`);
-  socket.broadcast.emit('peerJoined', peerName);
   peerMap.set(socket.id, peerName);
   io.emit('mapUpdate', Array.from(peerMap.entries()));
+  socket.emit('loadPast', Array.from(peerMap.entries()));
   console.log(peerMap);
+  socket.broadcast.emit('peerJoined', {id: socket.id, peerName});
   
   socket.on('disconnecting', (name) => {
     console.log('A peer disconnected:', socket.id);
     const peerName = peerMap.get(socket.id);
     peerMap.delete(socket.id);
     io.emit('mapUpdate', Array.from(peerMap.entries()));
-    socket.broadcast.emit('peerLeft', peerName);
+    socket.broadcast.emit('peerLeft', {id: socket.id, peerName});
   });
 
   socket.on('chatMessage', (msg) => {
-    console.log(socket.id, " says: ", msg);
-    const sk = socket.id;
-    socket.broadcast.emit('chatMessage', { sk, msg });
+    console.log(socket.id, " says: ", msg.msg);
+    socket.broadcast.emit('chatMessage', { id: socket.id, ...msg });
   });
   socket.on('file-data', (payload) => {
     console.log(`Received file from ${socket.id}: ${payload.name}`);
-    const sk = socket.id;
-    socket.broadcast.emit('file-received', { sk, ...payload });
+    socket.broadcast.emit('file-received', { id: socket.id, ...payload });
   });
   socket.on('peername', (peer) => {
-    console.log(`Peername from ${socket.id}: ${peer}`);
+    console.log(`Peername from ${socket.id}: ${peer.Peername}`);
     socket.broadcast.emit('nameplate', peer);
   });
 });

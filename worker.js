@@ -12,20 +12,44 @@ function initSocketConnection() {
   socket = io(server, {
     query: { name: Peername }  // Send the name as a query parameter during connection
   });
-  socket.on('peerJoined', (peerId) => {
+  socket.on('peerJoined', ({id, peerName}) => {
     const peerDiv = document.createElement('div');
     peerDiv.classList.add('peer_joined');
-    peerDiv.textContent = `+ ${peerId} has joined the chat.`;
+    peerDiv.textContent = `+ ${peerName} has joined the chat.`;
     chatBox.appendChild(peerDiv);
     lastpeer = '';
+
+    const chats = document.getElementById('chats');
+    const peerChat = document.createElement('div');
+    peerChat.id = `dm_chat_${id}`;
+    peerChat.classList.add('chatbox');
+    peerChat.style.display = 'none';
+    chats.appendChild(peerChat);
+    console.log(mapOpeers)
   });
 
-  socket.on('peerLeft', (peerId) => {
+  socket.on('peerLeft', (peerName) => {
     const peerDiv = document.createElement('div');
     peerDiv.classList.add('peer_left');
-    peerDiv.textContent = `- ${peerId} has left the chat.`;
+    peerDiv.textContent = `- ${peerName} has left the chat.`;
     chatBox.appendChild(peerDiv);
     lastpeer = '';
+
+    const chat = document.getElementById(`dm_chat_${id}`);
+    peerChat.style.display = 'none';
+  });
+
+  socket.on('loadPast', (peersArray) => {
+    pastMap = new Map(peersArray);
+    pastMap.delete(socket.id);
+    const chats = document.getElementById('chats');
+    pastMap.forEach((peerName, socketID) => {
+      const peerChat = document.createElement('div');
+      peerChat.id = `dm_chat_${socketID}`;
+      peerChat.classList.add('chatbox');
+      peerChat.style.display = 'none';
+      chats.appendChild(peerChat);
+    });
   });
 
   socket.on('mapUpdate', (peersArray) => {
@@ -50,9 +74,7 @@ function initSocketConnection() {
     console.log('Updated peers:', mapOpeers);
   });
 
-  socket.on('nameplate', (peer) => {
-    const peername = peer.slice(0,20);
-    const actualname = peer.slice(20);
+  socket.on('nameplate', ( { Peername: actualname, id: peername}) => {
     console.log("Received from: ", actualname);
     if (peername != lastpeer) {
       lastpeer = peername;
@@ -63,21 +85,31 @@ function initSocketConnection() {
     }
   });
 
-  socket.on('chatMessage', ({ sk: peername, msg }) => {
+  socket.on('chatMessage', ({ id, msg, type }) => {
+
     const msgElement = document.createElement('div');
     msgElement.innerHTML = msg.replace(/\n/g, '<br>');
     msgElement.classList.add('msg_other');
-    chatBox.appendChild(msgElement);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    console.log(`message sent from ${id} to ${type}`)
+    if (type === 'chatbox'){
+      chatBox.appendChild(msgElement);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    } else if (socket.id === type.slice(8)) {
+      console.log(`message sent from ${id} to ${type.slice(8)}`)
+      
+      const peerChat = document.getElementById(`dm_chat_${id}`);
+      peerChat.appendChild(msgElement);
+      peerChat.scrollTop = chatBox.scrollHeight;
+    }
   });
 
-  socket.on('file-received', ({ sk: peername, name, type, size, content }) => {
-    console.log(`Received file from ${peername}: ${name}`);
+  socket.on('file-received', ({ id, name, type, size, content }) => {
+    console.log(`Received file from ${id}: ${name}`);
     const filePayload = { name, type, size, content };
     appendFilePreview(filePayload, false);
   });
 
-  socket.on('sentImg', ({ sk: peername, src }) => {
+/*  socket.on('sentImg', ({ sk: peername, src }) => {
     const uint8Array = new Uint8Array(src.content);
     const blob = new Blob([uint8Array], { type: src.type || 'image/png' });
     const url = (window.URL || window.webkitURL).createObjectURL(blob);
@@ -88,25 +120,38 @@ function initSocketConnection() {
     img.classList.add('chat-image-other');
     chatBox.appendChild(img);
     chatBox.scrollTop = chatBox.scrollHeight;
-  });
+  });*/
 }
 
 function send() {
   console.log("Message sent");
   const msg = message.value;
+
+  let type = 'chatbox';
+
   if (msg) {
-    socket.emit('peername', socket.id + Peername);
-    socket.emit('chatMessage', msg);
     const msgElement = document.createElement('div');
     msgElement.innerHTML = msg.replace(/\n/g, '<br>');
     msgElement.classList.add('msg_you');
-    chatBox.appendChild(msgElement);
-
+    document.querySelectorAll('.chatbox').forEach(chatbox => {
+      const style = window.getComputedStyle(chatbox);
+      if (style.display === 'flex') {
+        type = chatbox.id;
+        chatbox.appendChild(msgElement);
+      }
+    });
+    if (type === 'chatbox'){
+      chatBox.appendChild(msgElement);
+    }
+    socket.emit('peername', { id : socket.id, Peername});
+    socket.emit('chatMessage', {msg, type});
     message.value = '';
     chatBox.scrollTop = chatBox.scrollHeight;
     lastpeer = '';
   }
 }
+
+
 
 function appendFilePreview(filePayload, isSender) {
   const { name, type, content } = filePayload;
@@ -147,6 +192,7 @@ function appendFilePreview(filePayload, isSender) {
     });
     buttonsDiv.appendChild(previewButton);
   }
+  
 
   const downloadButton = document.createElement('button');
   downloadButton.textContent = 'Download';
@@ -164,17 +210,17 @@ function appendFilePreview(filePayload, isSender) {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+
 function showImage(url, guy){
   const img = document.createElement('img');
   img.src = url;
-  img.width = 200;
-  img.height = 200;
+  img.style.maxWidth = '500px';
+  img.style.height = 'auto';
   console.log("appending chat-image-"+guy);
   img.classList.add('chat-image-'+guy);
   chatBox.appendChild(img);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
-
 
 document.querySelector("#fileInput").addEventListener("change", function (e) {
   const file = e.target.files[0];
@@ -190,15 +236,73 @@ document.querySelector("#fileInput").addEventListener("change", function (e) {
       size: file.size,
       content: Array.from(uint8Array),
     };
-    socket.emit('peername', socket.id + Peername);
+    socket.emit('peername', {id: socket.id, Peername});
     socket.emit('file-data', payload);
-    console.log("Sent file:", payload);
+    console.log("Sent file:", payload.content);
 
     appendFilePreview(payload, true);
   };
   fr.readAsArrayBuffer(file);
-});
 
+});
+document.getElementById('everyone').addEventListener('click', () => {
+  const chatboxes = document.querySelectorAll('.chatbox');
+  chatboxes.forEach(chatbox => {
+    chatbox.style.display = 'none';
+  });
+  const chatbox = document.getElementById(`chatbox`);
+  chatbox.style.display = 'flex';
+});
+/*
+document.querySelector("#fileInput").addEventListener("change", function (e) {
+  const CHUNK_SIZE = 1024 * 512; // 512KB per chunk
+
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  let offset = 0; // Start reading at the beginning of the file
+  const fr = new FileReader();
+  
+  fr.onload = () => {
+      const arrayBuffer = fr.result;
+      const uint8Array = new Uint8Array(arrayBuffer);
+      const chunk = Array.from(uint8Array);
+  
+      const payload = {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          chunk, // Current chunk data
+          offset, // Offset for tracking progress
+      };
+  
+      // Send the chunk to the server
+    socket.emit('file-chunk', payload);
+    console.log("Sent file:", payload);
+  
+      offset += CHUNK_SIZE; // Move to the next chunk
+      if (offset < file.size) {
+          readNextChunk(); // Continue reading
+      } else {
+          // Notify server that file transfer is complete
+          socket.emit('file-complete', { name: file.name, size: file.size });
+          console.log("File transfer complete:", file.name);
+          appendFilePreview(payload, true);
+
+      }
+  };
+  
+  const readNextChunk = () => {
+      const slice = file.slice(offset, offset + CHUNK_SIZE);
+      fr.readAsArrayBuffer(slice);
+  };
+  
+  // Start the chunking process
+  socket.emit('peername', { id: socket.id, Peername });
+  readNextChunk();
+
+});
+*/
 function setname() {
   const nameIn = document.getElementById("nameInput");
   Peername = nameIn.value;
@@ -219,31 +323,18 @@ message.addEventListener('keydown', (e) => {
   }
 });
 
-function showImageInModal(url) {
-  const modalOverlay = document.createElement('div');
-  modalOverlay.classList.add('modal-overlay');
+function buildConnection(socketID){
+  showChatBox(socketID);
+}
 
-  const modalContent = document.createElement('div');
-  modalContent.classList.add('modal-content');
-
-  const img = document.createElement('img');
-  img.src = url;
-  img.classList.add('preview-image');
-
-  const closeButton = document.createElement('button');
-  closeButton.textContent = '×';
-  closeButton.classList.add('preview-image-close');
-  closeButton.addEventListener('click', () => {
-    modalContent.removeChild(closeButton);
-    modalContent.removeChild(img);
-    modalOverlay.removeChild(modalContent);
-    document.body.removeChild(modalOverlay);
+function showChatBox(socketID){
+  const chatboxes = document.querySelectorAll('.chatbox');
+  chatboxes.forEach(chatbox => {
+    chatbox.style.display = 'none';
   });
 
-  modalContent.appendChild(closeButton);
-  modalContent.appendChild(img);
-  modalOverlay.appendChild(modalContent);
-  document.body.appendChild(modalOverlay);
+  const chatbox = document.getElementById(`dm_chat_${socketID}`);
+  chatbox.style.display = 'flex';
 }
 
 window.addEventListener('beforeunload', () => {
