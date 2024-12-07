@@ -142,8 +142,8 @@ function send() {
     });
     if (type === 'chatbox'){
       chatBox.appendChild(msgElement);
+      socket.emit('peername', { id : socket.id, Peername});
     }
-    socket.emit('peername', { id : socket.id, Peername});
     socket.emit('chatMessage', {msg, type});
     message.value = '';
     chatBox.scrollTop = chatBox.scrollHeight;
