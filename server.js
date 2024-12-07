@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-  const version = "1.0.5";
+  const version = "1.0.6";
   res.send(`Server is running v${version}`);
 });
 
