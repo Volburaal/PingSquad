@@ -118,6 +118,27 @@ body{
     border:2px #FFFFFF solid;
     border-radius: 20px;
     padding:10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.dm_list::-webkit-scrollbar {
+    width: 12px;
+}
+
+.dm_list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.dm_list::-webkit-scrollbar-thumb {
+    display: none;
+}
+.dm_list::-webkit-scrollbar-thumb:hover{
+    background-color: rgba(255, 0, 0, 0.7);
+}
+
+.dm_list::-webkit-scrollbar-button {
+    display: none;
 }
 .dm_list button{
     height:5%;

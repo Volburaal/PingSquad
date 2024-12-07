@@ -29,11 +29,39 @@ function initSocketConnection() {
   });
 
   socket.on('mapUpdate', (peersArray) => {
-    const peersMap = new Map(peersArray);  // Convert array back to a Map if needed
-    console.log('Updated peers:', peersMap);
-    
+    mapOpeers = new Map(peersArray);
+    mapOpeers.delete(socket.id);
+
+    const dmList = document.getElementById('dm_list');
+    dmList.querySelectorAll('button').forEach(button => {
+        if (button.id !== 'everyone') {
+            dmList.removeChild(button);
+        }
+    });
+
+    mapOpeers.forEach((peerName, socketID) => {
+        const peerButton = document.createElement('button');
+        peerButton.id = `dm_${socketID}`;
+        peerButton.textContent = peerName;
+        peerButton.onclick = () => buildConnection(socketID);
+        dmList.appendChild(peerButton);
+    });
+
+    console.log('Updated peers:', mapOpeers);
   });
 
+  socket.on('nameplate', (peer) => {
+    const peername = peer.slice(0,20);
+    const actualname = peer.slice(20);
+    console.log("Received from: ", actualname);
+    if (peername != lastpeer) {
+      lastpeer = peername;
+      const peerDiv = document.createElement('div');
+      peerDiv.innerHTML = actualname;
+      peerDiv.classList.add('nameplate');
+      chatBox.appendChild(peerDiv);
+    }
+  });
 
   socket.on('chatMessage', ({ sk: peername, msg }) => {
     const msgElement = document.createElement('div');
