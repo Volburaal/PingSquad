@@ -13,7 +13,6 @@ body{
     display: block;
     overflow-y:hidden;
 }
-
 .login-overlay::-webkit-scrollbar {
     width: 12px;
 }
@@ -110,6 +109,39 @@ body{
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+.mainBox{
+
+}
+.dm_list{
+    height:66vh;
+    width:7.5%;
+    border:2px #FFFFFF solid;
+    border-radius: 20px;
+    padding:10px;
+}
+.dm_list button{
+    height:5%;
+    width:100%;
+    border:none;
+    border-radius: 20px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 14px;
+    color: #d8d8d8;
+    font-weight: bold;
+    background-color: #696869;
+    margin:2px;
+    
+}
+.dm_list button:hover{
+    background-color: #4d4d4d;
+}
+.dm_list button.global_button{
+    background-color: #b530dd;
+}
+.dm_list button.global_button:hover{
+    background-color: #601179;
+}
+
 .container{
     position: fixed;
     top: 0;
