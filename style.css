@@ -141,7 +141,7 @@ body{
     display: none;
 }
 .dm_list button{
-    height:5%;
+    min-height: 5%;
     width:100%;
     border:none;
     border-radius: 20px;
@@ -151,7 +151,8 @@ body{
     font-weight: bold;
     background-color: #696869;
     margin:2px;
-    
+    word-wrap: break-word;
+    display: inline-block;
 }
 .dm_list button:hover{
     background-color: #4d4d4d;

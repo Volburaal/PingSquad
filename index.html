@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -25,7 +24,10 @@
                     <button id="everyone" class="global_button">Everyone</button>
                 </div>
                 <div class="container">
-                    <div id="chatbox" class="chatbox"> </div>
+                    <div id="chats">
+                        <div id="chatbox" class="chatbox" style="display: flex;"> </div>
+                        <div id="chatbox1" class="chatbox" style="display: none;"> </div>
+                    <div>
                     <div class="inputTools">
                     <input type="file" id="fileInput" class="actualFileArea" hidden>
                     <label for="fileInput" class="fileArea"><img src="assets/upload2.svg" alt="Upload File"></label>
@@ -39,5 +41,3 @@
         <script src = "worker.js"></script>
     </body>
 </html>
-
-
