@@ -29,6 +29,7 @@ io.on('connection', (socket) => {
   
   socket.on('disconnecting', (name) => {
     console.log('A peer disconnected:', socket.id);
+    console.log('name: ',peerMap.get(socket.id))
     const peerName = peerMap.get(socket.id);
     peerMap.delete(socket.id);
     io.emit('mapUpdate', Array.from(peerMap.entries()));

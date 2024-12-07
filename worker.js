@@ -30,6 +30,7 @@ function initSocketConnection() {
 
   socket.on('peerLeft', (peerName) => {
     const peerDiv = document.createElement('div');
+    console.log(peerName)
     peerDiv.classList.add('peer_left');
     peerDiv.textContent = `- ${peerName} has left the chat.`;
     chatBox.appendChild(peerDiv);
@@ -91,12 +92,19 @@ function initSocketConnection() {
     msgElement.innerHTML = msg.replace(/\n/g, '<br>');
     msgElement.classList.add('msg_other');
     console.log(`message sent from ${id} to ${type}`)
+
     if (type === 'chatbox'){
+      if (window.getComputedStyle(document.getElementById('everyone')).backgroundColor != 'rgb(77, 7, 99)'){
+        document.getElementById('everyone').style.backgroundColor='#bb2c45';
+      }
       chatBox.appendChild(msgElement);
       chatBox.scrollTop = chatBox.scrollHeight;
-    } else if (socket.id === type.slice(8)) {
+    }
+    else if (socket.id === type.slice(8)) {
+      if (window.getComputedStyle(document.getElementById(`dm_${id}`)).backgroundColor != 'rgb(56, 56, 56)'){
+        document.getElementById(`dm_${id}`).style.backgroundColor='#bb2c45';
+      }
       console.log(`message sent from ${id} to ${type.slice(8)}`)
-      
       const peerChat = document.getElementById(`dm_chat_${id}`);
       peerChat.appendChild(msgElement);
       peerChat.scrollTop = chatBox.scrollHeight;
@@ -106,7 +114,7 @@ function initSocketConnection() {
   socket.on('file-received', ({ id, name, type, size, content }) => {
     console.log(`Received file from ${id}: ${name}`);
     const filePayload = { name, type, size, content };
-    appendFilePreview(filePayload, false);
+    appendFilePreview(filePayload, false, id);
   });
 
 /*  socket.on('sentImg', ({ sk: peername, src }) => {
@@ -153,7 +161,7 @@ function send() {
 
 
 
-function appendFilePreview(filePayload, isSender) {
+function appendFilePreview(filePayload, isSender, destID) {
   const { name, type, content } = filePayload;
 
   const uint8Array = new Uint8Array(content);
@@ -205,9 +213,21 @@ function appendFilePreview(filePayload, isSender) {
   buttonsDiv.appendChild(downloadButton);
 
   fileDiv.appendChild(buttonsDiv);
-
-  chatBox.appendChild(fileDiv);
-  chatBox.scrollTop = chatBox.scrollHeight;
+  if(isSender){
+    document.querySelectorAll('.chatbox').forEach(chatbox => {
+      const style = window.getComputedStyle(chatbox);
+      if (style.display === 'flex') {
+        console.log("appending to ",chatbox.id)
+        chatbox.appendChild(fileDiv);
+        chatbox.scrollTop = chatbox.scrollHeight;
+      }
+    }); 
+  }
+  else{
+    console.log("appending to ",'dm_chat_'+destID)
+    const chetBux = document.getElementById('dm_chat_'+destID);
+    chetBux.appendChild(fileDiv)
+  }
 }
 
 
@@ -236,20 +256,37 @@ document.querySelector("#fileInput").addEventListener("change", function (e) {
       size: file.size,
       content: Array.from(uint8Array),
     };
-    socket.emit('peername', {id: socket.id, Peername});
+
+    if (window.getComputedStyle(chatBox).display == 'flex'){
+      socket.emit('peername', { id : socket.id, Peername});
+    }
+
     socket.emit('file-data', payload);
     console.log("Sent file:", payload.content);
 
-    appendFilePreview(payload, true);
+    appendFilePreview(payload, true, "nullo");
   };
   fr.readAsArrayBuffer(file);
-
 });
 document.getElementById('everyone').addEventListener('click', () => {
+  const dm_buttons = document.querySelectorAll('#dm_list button');
+  dm_buttons.forEach(function(button){
+    if (window.getComputedStyle(button).backgroundColor != 'rgb(187, 44, 69)'){
+      button.style.backgroundColor='#696869';
+    }
+  })
+  var every = document.getElementById('everyone');
+  if (window.getComputedStyle(every).backgroundColor != 'rgb(187, 44, 69)'){
+    every.style.backgroundColor = '#b530dd';
+  }
   const chatboxes = document.querySelectorAll('.chatbox');
   chatboxes.forEach(chatbox => {
     chatbox.style.display = 'none';
   });
+  const bootoom_text = document.getElementById("chat_with");
+  var target = document.getElementById('everyone');
+  target.style.backgroundColor = '#4d0763';
+  bootoom_text.textContent = "Now Chatting with : Everyone";
   const chatbox = document.getElementById(`chatbox`);
   chatbox.style.display = 'flex';
 });
@@ -324,6 +361,19 @@ message.addEventListener('keydown', (e) => {
 });
 
 function buildConnection(socketID){
+  const dm_buttons = document.querySelectorAll('#dm_list button');
+  dm_buttons.forEach(function(button){
+    button.style.backgroundColor='#696869';
+  })
+  var every = document.getElementById('everyone');
+  every.style.backgroundColor = '#b530dd';
+
+  var target = document.getElementById('dm_'+socketID);
+  target.style.backgroundColor = '#383838';
+  const bootoom_text = document.getElementById("chat_with");
+  var pname = mapOpeers.get(socketID);
+  console.log(bootoom_text.value);
+  bootoom_text.textContent = "Now Chatting with : " + pname;
   showChatBox(socketID);
 }
 
