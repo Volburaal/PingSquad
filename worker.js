@@ -1,5 +1,5 @@
-const server = "https://pingsquad.onrender.com/";
-// const server = "http://127.0.0.1:3000/";
+// const server = "https://pingsquad.onrender.com/";
+const server = "http://127.0.0.1:3000/";
 let socket;
 const chatBox = document.getElementById('chatbox');
 const message = document.getElementById('msgInput');
@@ -169,7 +169,7 @@ function appendFilePreview(filePayload, isSender) {
 
   if (type.startsWith('image/')){
      const guy = isSender ? 'you' : 'other';
-      showImage(url, guy);
+      showImage(url, guy, destID, isSender, id, type);
       return;
   }
 
@@ -230,7 +230,8 @@ function appendFilePreview(filePayload, isSender) {
     const peerChat = document.getElementById(`dm_chat_${id}`);
     peerChat.appendChild(fileDiv);
     peerChat.scrollTop = chatBox.scrollHeight;
-  }else if (socket.id !== destID.slice(8) && isSender) {
+  }
+  else if (socket.id !== destID.slice(8) && isSender) {
     console.log('no')
 
     if (window.getComputedStyle(document.getElementById(`dm_${destID.slice(8)}`)).backgroundColor != 'rgb(56, 56, 56)'){
@@ -243,15 +244,43 @@ function appendFilePreview(filePayload, isSender) {
   }
 }
 
-function showImage(url, guy){
-  const img = document.createElement('img');
-  img.src = url;
-  img.style.maxWidth = '500px';
-  img.style.height = 'auto';
+function showImage(url, guy, destID, isSender, id, type){
+  console.log("File needs to go to ",destID);
+  const fileDiv = document.createElement('img');
+  fileDiv.src = url;
+  fileDiv.style.maxWidth = '500px';
+  fileDiv.style.height = 'auto';
   console.log("appending chat-image-"+guy);
-  img.classList.add('chat-image-'+guy);
-  chatBox.appendChild(img);
-  chatBox.scrollTop = chatBox.scrollHeight;
+  fileDiv.classList.add('chat-image-'+guy);
+  if (destID === 'chatbox'){
+    if (window.getComputedStyle(document.getElementById('everyone')).backgroundColor != 'rgb(77, 7, 99)'){
+      document.getElementById('everyone').style.backgroundColor='#bb2c45';
+    }
+    chatBox.appendChild(fileDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+  else if (socket.id === destID.slice(8)) {
+    console.log('yes')
+
+    if (window.getComputedStyle(document.getElementById(`dm_${id}`)).backgroundColor != 'rgb(56, 56, 56)'){
+      document.getElementById(`dm_${id}`).style.backgroundColor='#bb2c45';
+    }
+    console.log(`message sent from ${id} to ${type.slice(8)}`)
+    const peerChat = document.getElementById(`dm_chat_${id}`);
+    peerChat.appendChild(fileDiv);
+    peerChat.scrollTop = chatBox.scrollHeight;
+  }
+  else if (socket.id !== destID.slice(8) && isSender) {
+    console.log('no')
+
+    if (window.getComputedStyle(document.getElementById(`dm_${destID.slice(8)}`)).backgroundColor != 'rgb(56, 56, 56)'){
+      document.getElementById(`dm_${destID.slice(8)}`).style.backgroundColor='#bb2c45';
+    }
+
+    const peerChat = document.getElementById(destID);
+    peerChat.appendChild(fileDiv);
+    peerChat.scrollTop = chatBox.scrollHeight;
+  }
 }
 
 document.querySelector("#fileInput").addEventListener("change", function (e) {
