@@ -1,5 +1,5 @@
-// const server = "https://pingsquad.onrender.com/";
-const server = "http://127.0.0.1:3000/";
+const server = "https://pingsquad.onrender.com/";
+// const server = "http://127.0.0.1:3000/";
 let socket;
 const chatBox = document.getElementById('chatbox');
 const message = document.getElementById('msgInput');
