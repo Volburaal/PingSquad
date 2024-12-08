@@ -3,14 +3,16 @@ const server = "http://127.0.0.1:3000/";
 let socket;
 const chatBox = document.getElementById('chatbox');
 const message = document.getElementById('msgInput');
+const nameInpot = document.getElementById('nameInput');
 const sendButton = document.getElementById('sendBtn');
 var lastpeer = '';
 let Peername = '';
+var nameset = false;
 let mapOpeers = new Map();
 
 function initSocketConnection() {
   socket = io(server, {
-    query: { name: Peername }  // Send the name as a query parameter during connection
+    query: { name: Peername }
   });
   socket.on('peerJoined', ({id, peerName}) => {
     const peerDiv = document.createElement('div');
@@ -37,6 +39,9 @@ function initSocketConnection() {
     lastpeer = '';
 
     const peerChat = document.getElementById(`dm_chat_${id}`);
+    if(window.getComputedStyle(peerChat).display == 'flex'){
+      document.getElementById('everyone').click();
+    } 
     peerChat.style.display = 'none';
   });
 
@@ -54,21 +59,30 @@ function initSocketConnection() {
   });
 
   socket.on('mapUpdate', (peersArray) => {
+
     mapOpeers = new Map(peersArray);
     mapOpeers.delete(socket.id);
 
     const dmList = document.getElementById('dm_list');
+    let unread = [];
     dmList.querySelectorAll('button').forEach(button => {
         if (button.id !== 'everyone') {
-            dmList.removeChild(button);
+          if (window.getComputedStyle(button).backgroundColor == 'rgb(187, 44, 69)'){
+            unread.push(button.id);
+          }
+          dmList.removeChild(button);
         }
     });
+    console.log(unread);
 
     mapOpeers.forEach((peerName, socketID) => {
         const peerButton = document.createElement('button');
         peerButton.id = `dm_${socketID}`;
         peerButton.textContent = peerName;
         peerButton.onclick = () => buildConnection(socketID);
+        if (unread.includes(`dm_${socketID}`)){
+          peerButton.style.backgroundColor = '#bb2c45';
+        }
         dmList.appendChild(peerButton);
     });
 
@@ -115,19 +129,6 @@ function initSocketConnection() {
     console.log(`Received file from ${payload.id}: ${payload.name}`);
     appendFilePreview(payload, false);
   });
-
-/*  socket.on('sentImg', ({ sk: peername, src }) => {
-    const uint8Array = new Uint8Array(src.content);
-    const blob = new Blob([uint8Array], { type: src.type || 'image/png' });
-    const url = (window.URL || window.webkitURL).createObjectURL(blob);
-    const img = document.createElement('img');
-    img.src = url;
-    img.width = 200;
-    img.height = 200;
-    img.classList.add('chat-image-other');
-    chatBox.appendChild(img);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  });*/
 }
 
 function send() {
@@ -242,7 +243,6 @@ function appendFilePreview(filePayload, isSender) {
   }
 }
 
-
 function showImage(url, guy){
   const img = document.createElement('img');
   img.src = url;
@@ -253,8 +253,6 @@ function showImage(url, guy){
   chatBox.appendChild(img);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
-
-
 
 document.querySelector("#fileInput").addEventListener("change", function (e) {
   const file = e.target.files[0];
@@ -310,139 +308,28 @@ document.getElementById('everyone').addEventListener('click', () => {
   const chatbox = document.getElementById(`chatbox`);
   chatbox.style.display = 'flex';
 });
-/*
-document.querySelector("#fileInput").addEventListener("change", function (e) {
-  const CHUNK_SIZE = 1024 * 512; // 512KB per chunk
 
-  const file = e.target.files[0];
-  if (!file) return;
-  
-  let offset = 0; // Start reading at the beginning of the file
-  const fr = new FileReader();
-  
-  fr.onload = () => {
-      const arrayBuffer = fr.result;
-      const uint8Array = new Uint8Array(arrayBuffer);
-      const chunk = Array.from(uint8Array);
-  
-      const payload = {
-          name: file.name,
-          type: file.type,
-          size: file.size,
-          chunk, // Current chunk data
-          offset, // Offset for tracking progress
-      };
-  
-      // Send the chunk to the server
-      socket.emit('file-chunk', payload);
-      console.log("Sent file chunk:", payload);
-  
-      offset += CHUNK_SIZE; // Move to the next chunk
-      if (offset < file.size) {
-          readNextChunk(); // Continue reading
-      } else {
-          // Notify server that file transfer is complete
-          socket.emit('file-complete', { name: file.name, size: file.size });
-          console.log("File transfer complete:", file.name);
-          appendFilePreview({ name: file.name, type: file.type, size: file.size }, true);
-
-      }
-  };
-  
-  const readNextChunk = () => {
-      const slice = file.slice(offset, offset + CHUNK_SIZE);
-      fr.readAsArrayBuffer(slice);
-  };
-  
-  // Start the chunking process
-  socket.emit('peername', { id: socket.id, Peername });
-  readNextChunk();
-
-});
-
-socket.on('file-chunk', ({ id, name, type, size, chunk, offset }) => {
-  console.log(`Received chunk for ${name}: Offset ${offset}`);
-  if (!window.fileBuffer) window.fileBuffer = {};
-  if (!window.fileBuffer[name]) window.fileBuffer[name] = { chunks: [], size: size, type: type };
-
-  window.fileBuffer[name].chunks.push(chunk);
-
-  // Check if all chunks are received
-  const receivedSize = window.fileBuffer[name].chunks.reduce((total, current) => total + current.length, 0);
-  if (receivedSize >= size) {
-      // Reassemble the file
-      const allChunks = window.fileBuffer[name].chunks.flat();
-      const uint8Array = new Uint8Array(allChunks);
-      const blob = new Blob([uint8Array], { type });
-      const url = (window.URL || window.webkitURL).createObjectURL(blob);
-
-      console.log(`File received completely: ${name}`);
-      appendFilePreview({ name, type, size, content: uint8Array }, false, id);
-
-      // Clear buffer
-      delete window.fileBuffer[name];
-  }
-});
-
-
-/*
-document.querySelector("#fileInput").addEventListener("change", function (e) {
-  const CHUNK_SIZE = 1024 * 512; // 512KB per chunk
-
-  const file = e.target.files[0];
-  if (!file) return;
-  
-  let offset = 0; // Start reading at the beginning of the file
-  const fr = new FileReader();
-  
-  fr.onload = () => {
-      const arrayBuffer = fr.result;
-      const uint8Array = new Uint8Array(arrayBuffer);
-      const chunk = Array.from(uint8Array);
-  
-      const payload = {
-          name: file.name,
-          type: file.type,
-          size: file.size,
-          chunk, // Current chunk data
-          offset, // Offset for tracking progress
-      };
-  
-      // Send the chunk to the server
-    socket.emit('file-chunk', payload);
-    console.log("Sent file:", payload);
-  
-      offset += CHUNK_SIZE; // Move to the next chunk
-      if (offset < file.size) {
-          readNextChunk(); // Continue reading
-      } else {
-          // Notify server that file transfer is complete
-          socket.emit('file-complete', { name: file.name, size: file.size });
-          console.log("File transfer complete:", file.name);
-          appendFilePreview(payload, true);
-
-      }
-  };
-  
-  const readNextChunk = () => {
-      const slice = file.slice(offset, offset + CHUNK_SIZE);
-      fr.readAsArrayBuffer(slice);
-  };
-  
-  // Start the chunking process
-  socket.emit('peername', { id: socket.id, Peername });
-  readNextChunk();
-
-});
-*/
 function setname() {
   const nameIn = document.getElementById("nameInput");
   Peername = nameIn.value;
+  if (Peername == ''){
+    return;
+  }
   console.log(Peername);
   const overlay = document.getElementById("login-overlay")
   overlay.style.display = "none";
+  nameset = true;
   initSocketConnection();
 }
+
+nameInpot.addEventListener('keydown', (e) => {
+  if(!nameset) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      setname();
+    }
+  }
+});
 
 message.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) {
@@ -458,10 +345,14 @@ message.addEventListener('keydown', (e) => {
 function buildConnection(socketID){
   const dm_buttons = document.querySelectorAll('#dm_list button');
   dm_buttons.forEach(function(button){
-    button.style.backgroundColor='#696869';
+    if (window.getComputedStyle(button).backgroundColor != 'rgb(187, 44, 69)'){
+      button.style.backgroundColor='#696869';
+    }
   })
   var every = document.getElementById('everyone');
-  every.style.backgroundColor = '#b530dd';
+  if (window.getComputedStyle(every).backgroundColor != 'rgb(187, 44, 69)'){
+    every.style.backgroundColor = '#b530dd';
+  }
 
   var target = document.getElementById('dm_'+socketID);
   target.style.backgroundColor = '#383838';

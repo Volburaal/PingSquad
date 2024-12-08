@@ -153,6 +153,7 @@ body{
     margin:2px;
     word-wrap: break-word;
     display: inline-block;
+    transition: background-color 0.3s ease-in-out;
 }
 .dm_list button:hover{
     background-color: #4d4d4d;

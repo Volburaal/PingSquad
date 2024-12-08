@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-  const version = "1.0.6";
+  const version = "1.0.7";
   res.send(`Server is running v${version}`);
 });
 server.maxHttpBufferSize = 1e8;
@@ -45,13 +45,11 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('file-received', { id: socket.id, ...payload });
   });
 
-  // Handle file chunk transfer
   socket.on('file-chunk', (payload) => {
     console.log(`Received file chunk from ${socket.id}: ${payload.name}, Offset: ${payload.offset}`);
     socket.broadcast.emit('file-chunk', { id: socket.id, ...payload });
   });
 
-  // Handle file transfer completion
   socket.on('file-complete', ({ name, size }) => {
     console.log(`File transfer complete from ${socket.id}: ${name} (${size} bytes)`);
     socket.broadcast.emit('file-complete', { id: socket.id, name });
