@@ -1,4 +1,4 @@
-const server = "https://pingsquad.onrender.com/";
+const server = "https://pingsquad-s71w.onrender.com/";
 // const server = "http://127.0.0.1:3000/";
 let socket;
 const chatBox = document.getElementById('chatbox');

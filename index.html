@@ -2,7 +2,8 @@
 <html>
     <head>
         <title>PingSquad</title>
-        <link rel="stylesheet" href="style.css">
+        <link rel="icon" type="image/png" href="/assets//Pinguin.png" />
+        <link rel="stylesheet" href="/style.css">
     </head>
     <body>
         <div id="login-overlay" class="login-overlay" style="display: block;">
@@ -29,9 +30,9 @@
                     </div>
                     <div class="inputTools">
                         <input type="file" id="fileInput" class="actualFileArea" hidden>
-                        <label for="fileInput" class="fileArea"><img src="assets/upload2.svg" alt="Upload File"></label>
+                        <label for="fileInput" class="fileArea"><img src="/assets/upload2.svg" alt="Upload File"></label>
                         <textarea id = "msgInput" class="inputArea" autocomplete="off"></textarea>
-                        <button id = "sendBtn" class = "sendButton" onclick="send()"><img src="assets/send.svg" alt="Send"></button>
+                        <button id = "sendBtn" class = "sendButton" onclick="send()"><img src="/assets/send.svg" alt="Send"></button>
                     </div>
                     <div id="chat_with" class="chat_with">
                         Now Chatting with : Everyone
@@ -40,6 +41,6 @@
             </div>
         </div>
         <script src="https://cdn.socket.io/4.8.0/socket.io.min.js" integrity="sha384-OoIbkvzsFFQAG88r+IqMAjyOtYDPGO0cqK5HF5Uosdy/zUEGySeAzytENMDynREd" crossorigin="anonymous"></script>
-        <script src = "worker.js"></script>
+        <script src = "/script.js"></script>
     </body>
 </html>
